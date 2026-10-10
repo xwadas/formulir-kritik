@@ -1,10 +1,60 @@
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from datetime import datetime
+import requests
 import random
+import base64
 
-st.set_page_config(page_title="Aplikasi Lengkap", page_icon="🎮", layout="centered")
+# =========================================================
+# KONFIGURASI HALAMAN
+# =========================================================
+st.set_page_config(
+    page_title="Aplikasi Lengkap dengan Latar Belakang & Game",
+    page_icon="🎮",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
+# =========================================================
+# MENAMBAHKAN LATAR BELAKANG DENGAN CSS KUSTOM
+# =========================================================
+# Pastikan file 'background.jpg' sudah diunggah ke repositori GitHub kamu
+background_image_path = "background.jpg"
+
+def add_bg_from_local(image_file):
+    try:
+        with open(image_file, "rb") as f:
+            encoded_string = base64.b64encode(f.read())
+        st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        .block-container {{
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+        )
+    except FileNotFoundError:
+        pass # Jika file gambar belum ada, aplikasi tetap berjalan normal tanpa background
+
+add_bg_from_local(background_image_path)
+
+# =========================================================
+# KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
+# =========================================================
+# Ganti teks di dalam tanda kutip dengan URL Web App dari Google Apps Script kamu
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
 
 # =========================================================
 # NAVIGATION BAR / PILIHAN MENU
@@ -12,75 +62,108 @@ st.set_page_config(page_title="Aplikasi Lengkap", page_icon="🎮", layout="cent
 st.sidebar.title("📌 Navigation Menu")
 menu = st.sidebar.radio(
     "Pilih Halaman:",
-    ["Tampilan Gambar & Mini Game", "Kritik & Pesan"]
+    ["Mini Game Seru", "Kritik & Pesan"]
 )
 
 # =========================================================
-# HALAMAN 1: TAMPILAN GAMBAR & MINI GAME
+# HALAMAN 1: MINI GAME SERU (Level, Nyawa, & Clue)
 # =========================================================
-if menu == "Tampilan Gambar & Mini Game":
-    st.title("🖼️ Tampilan Gambar Utama")
-    
-    # Menampilkan Gambar Utama
-    st.image("https://picsum.photos/800/400", use_container_width=True, caption="Gambar Utama")
-    
+if menu == "Mini Game Seru":
+    st.title("🎮 Arcade: Tebak Angka Misterius")
+    st.write("Uji keberuntungan dan logika-mu! Temukan angka rahasia sebelum nyawamu habis.")
     st.write("---")
+
+    # Pilih Level Kesulitan
+    level = st.selectbox("Pilih Level Kesulitan:", ["Mudah (1 - 50)", "Sedang (1 - 100)", "Sulit (1 - 200)"])
     
-    # Mini Game Tebak Angka
-    st.subheader("🎮 Mini Game: Tebak Angka (1 - 100)")
-    st.write("Coba tebak angka rahasia sebelum mengisi formulir!")
+    max_val = 50 if "Mudah" in level else (100 if "Sedang" in level else 200)
 
-    if "target_number" not in st.session_state:
-        st.session_state.target_number = random.randint(1, 100)
-    if "attempts" not in st.session_state:
+    # Inisialisasi State Game
+    if "target" not in st.session_state or st.session_state.get("max_val") != max_val:
+        st.session_state.max_val = max_val
+        st.session_state.target = random.randint(1, max_val)
+        st.session_state.lives = 5
         st.session_state.attempts = 0
-    if "game_over" not in st.session_state:
         st.session_state.game_over = False
+        st.session_state.win = False
+        st.session_state.clue_used = False
 
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        tebakan = st.number_input("Masukkan tebakanmu:", min_value=1, max_value=100, value=50, step=1, disabled=st.session_state.game_over)
-    with col2:
-        st.write("")
-        st.write("")
-        tebak_btn = st.button("Tebak! 🎯", disabled=st.session_state.game_over)
+    # Tampilkan Status Nyawa & Percobaan
+    col_stat1, col_stat2 = st.columns(2)
+    with col_stat1:
+        st.metric(label="Sisa Nyawa ❤️", value=f"{st.session_state.lives} / 5")
+    with col_stat2:
+        st.metric(label="Total Tebakan 🎯", value=st.session_state.attempts)
+
+    if not st.session_state.game_over and not st.session_state.win:
+        tebakan = st.number_input(f"Masukkan angka antara 1 sampai {max_val}:", min_value=1, max_value=max_val, value=1, step=1)
         
-    if tebak_btn and not st.session_state.game_over:
-        st.session_state.attempts += 1
-        if tebakan < st.session_state.target_number:
-            st.warning(f"💡 Angka tebakanmu ({tebakan}) terlalu *KECIL*!")
-        elif tebakan > st.session_state.target_number:
-            st.warning(f"💡 Angka tebakanmu ({tebakan}) terlalu *BESAR*!")
-        else:
-            st.balloons()
-            st.success(f"🎉 *SELAMAT!* Angka rahasianya adalah *{st.session_state.target_number}* (Total percobaan: {st.session_state.attempts})")
-            st.session_state.game_over = True
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            kirim_btn = st.button("Kirim Tebakan 🚀", use_container_width=True)
+        with col_btn2:
+            clue_btn = st.button("🔍 Minta Clue", use_container_width=True)
+
+        # Logika Tombol Clue
+        if clue_btn:
+            if not st.session_state.clue_used:
+                st.session_state.clue_used = True
+                sifat = "Genap" if st.session_state.target % 2 == 0 else "Ganjil"
+                kelipatan_5 = "Ya" if st.session_state.target % 5 == 0 else "Tidak"
+                st.info(f"💡 *CLUE:* Angka rahasia berstatus *{sifat}* dan kelipatan 5 adalah *{kelipatan_5}*!")
+            else:
+                st.warning("⚠️ Clue sudah digunakan untuk ronde ini!")
+
+        # Logika Tombol Kirim Tebakan
+        if kirim_btn:
+            st.session_state.attempts += 1
             
-    if st.button("🔄 Main Lagi"):
-        st.session_state.target_number = random.randint(1, 100)
-        st.session_state.attempts = 0
-        st.session_state.game_over = False
+            if tebakan == st.session_state.target:
+                st.session_state.win = True
+                st.balloons()
+            elif tebakan < st.session_state.target:
+                st.session_state.lives -= 1
+                st.warning(f"💡 Tebakanmu (*{tebakan}) terlalu **KECIL*! Cari angka yang lebih besar.")
+            else:
+                st.session_state.lives -= 1
+                st.warning(f"💡 Tebakanmu (*{tebakan}) terlalu **BESAR*! Cari angka yang lebih kecil.")
+                
+            if st.session_state.lives <= 0:
+                st.session_state.game_over = True
+            
+            st.rerun()
+
+    # Kondisi Menang
+    if st.session_state.win:
+        st.success(f"🎉 *LUAR BIASA! Kamu Menang!* Angka rahasianya adalah *{st.session_state.target}*.")
+        st.info(f"Kamu berhasil menebaknya dalam {st.session_state.attempts} kali percobaan.")
+        if st.button("Main Lagi 🔄"):
+            del st.session_state.target
+            st.rerun()
+
+    # Kondisi Kalah (Game Over)
+    if st.session_state.game_over:
+        st.error(f"💀 *GAME OVER!* Nyawamu habis. Angka rahasia yang benar adalah *{st.session_state.target}*.")
+        if st.button("Coba Lagi 🔄"):
+            del st.session_state.target
+            st.rerun()
+
+    # Tombol Reset Manual
+    st.write("")
+    if st.button("🔄 Reset / Ganti Angka Baru"):
+        del st.session_state.target
         st.rerun()
 
 # =========================================================
-# HALAMAN 2: GAMBAR ATAS + FORMULIR (NAMA, NO HP, PESAN)
+# HALAMAN 2: FORMULIR KRITIK & PESAN (Terhubung Google Sheets)
 # =========================================================
 elif menu == "Kritik & Pesan":
     st.title("📝 Halaman Kritik & Pesan")
-    
-    # 1. Gambar Bagian Atas Sesuai Sketsa
-    st.image("https://picsum.photos/800/250", use_container_width=True, caption="Banner Formulir")
-    
+    st.write("Silakan isi formulir di bawah ini, data akan langsung masuk ke Google Sheets secara permanen.")
     st.write("---")
     
-    # 2. Formulir Kritik & Pesan (Nama, No HP, Pesan)
-    st.subheader("📬 Form Masukan Pengguna")
-    
-    # Inisialisasi koneksi Google Sheets
-    conn = st.connection("gsheets", type=GSheetsConnection)
-
     with st.form("form_kritik_pesan"):
-        nama = st.text_input("Nama")
+        nama = st.text_input("Nama Lengkap")
         no_hp = st.text_input("No HP / WhatsApp")
         pesan = st.text_area("Pesan / Kritik & Saran")
         
@@ -96,22 +179,19 @@ elif menu == "Kritik & Pesan":
             else:
                 waktu_kirim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 
-                # Baca data lama dari Google Sheets
+                payload = {
+                    "waktu": waktu_kirim,
+                    "nama": nama,
+                    "no_hp": no_hp,
+                    "pesan": pesan
+                }
+                
                 try:
-                    existing_data = conn.read(worksheet="Sheet1", ttl=0)
-                except Exception:
-                    existing_data = pd.DataFrame()
-
-                # Buat baris data baru (Waktu, Nama, No HP, Pesan)
-                data_baru = pd.DataFrame([{
-                    "Waktu": waktu_kirim,
-                    "Nama": nama,
-                    "No HP": no_hp,
-                    "Pesan": pesan
-                }])
-                
-                # Simpan ke Google Sheets
-                updated_df = pd.concat([existing_data, data_baru], ignore_index=True)
-                conn.update(worksheet="Sheet1", data=updated_df)
-                
-                st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
+                    response = requests.post(WEB_APP_URL, json=payload)
+                    if response.status_code == 200:
+                        st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
+                        st.balloons()
+                    else:
+                        st.error("❌ Gagal mengirim data ke server.")
+                except Exception as e:
+                    st.error(f"Terjadi kesalahan: {e}")
