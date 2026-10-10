@@ -170,39 +170,52 @@ if menu == "Mini Game Seru":
 
 elif menu == "Kritik & Pesan":
     st.title("📝 Halaman Kritik & Pesan")
-    st.write("Silakan isi formulir di bawah ini, data akan langsung masuk ke Google Sheets secara permanen.")
+    st.write("Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional (boleh dikosongkan).")
     st.write("---")
     
-    with st.form("form_kritik_pesan"):
-        nama = st.text_input("Nama Lengkap")
-        no_hp = st.text_input("No HP / WhatsApp")
-        pesan = st.text_area("Pesan / Kritik & Saran")
-        
-        submitted = st.form_submit_button("Kirim Pesan 🚀")
-        
-        if submitted:
-            if not nama.strip():
-                st.error("Nama wajib diisi!")
-            elif not no_hp.strip():
-                st.error("No HP wajib diisi!")
-            elif not pesan.strip():
-                st.error("Pesan tidak boleh kosong!")
-            else:
-                waktu_kirim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                
-                payload = {
-                    "waktu": waktu_kirim,
-                    "nama": nama,
-                    "no_hp": no_hp,
-                    "pesan": pesan
-                }
-                
-                try:
-                    response = requests.post(WEB_APP_URL, json=payload)
-                    if response.status_code == 200:
-                        st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
-                        st.balloons()
-                    else:
-                        st.error("❌ Gagal mengirim data ke server.")
-                except Exception as e:
-                    st.error(f"Terjadi kesalahan: {e}")
+    # Inisialisasi status pengiriman
+    if "form_submitted_success" not in st.session_state:
+        st.session_state.form_submitted_success = False
+
+    if st.session_state.form_submitted_success:
+        st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
+        st.balloons()
+        st.write("")
+        if st.button("🔄 Kirim Pesan Lain"):
+            st.session_state.form_submitted_success = False
+            st.rerun()
+            
+    else:
+        with st.form("form_kritik_pesan"):
+            nama = st.text_input("Nama Lengkap (Opsional)")
+            no_hp = st.text_input("No HP / WhatsApp (Opsional)")
+            pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
+            
+            submitted = st.form_submit_button("Kirim Pesan 🚀")
+            
+            if submitted:
+                if not pesan.strip():
+                    st.error("Pesan wajib diisi!")
+                else:
+                    # Jika nama atau no_hp kosong, beri nilai default
+                    final_nama = nama.strip() if nama.strip() else "Anonim"
+                    final_no_hp = no_hp.strip() if no_hp.strip() else "-"
+                    
+                    waktu_kirim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    
+                    payload = {
+                        "waktu": waktu_kirim,
+                        "nama": final_nama,
+                        "no_hp": final_no_hp,
+                        "pesan": pesan
+                    }
+                    
+                    try:
+                        response = requests.post(WEB_APP_URL, json=payload)
+                        if response.status_code == 200:
+                            st.session_state.form_submitted_success = True
+                            st.rerun()
+                        else:
+                            st.error("❌ Gagal mengirim data ke server.")
+                    except Exception as e:
+                        st.error(f"Terjadi kesalahan: {e}")
