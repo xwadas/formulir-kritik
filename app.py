@@ -65,9 +65,9 @@ menu = st.sidebar.radio(
     ["Mini Game Seru", "Kritik & Pesan"]
 )
 
-# =========================================================
-# HALAMAN 1: MINI GAME SERU (Level, Nyawa, & Clue)
-# =========================================================
+
+# HALAMAN 1: MINI GAME SERU (Diperbaiki agar clue muncul)
+
 if menu == "Mini Game Seru":
     st.title("🎮 Arcade: Tebak Angka Misterius")
     st.write("Uji keberuntungan dan logika-mu! Temukan angka rahasia sebelum nyawamu habis.")
@@ -87,6 +87,8 @@ if menu == "Mini Game Seru":
         st.session_state.game_over = False
         st.session_state.win = False
         st.session_state.clue_used = False
+        st.session_state.message = ""
+        st.session_state.clue_text = ""
 
     # Tampilkan Status Nyawa & Percobaan
     col_stat1, col_stat2 = st.columns(2)
@@ -110,9 +112,13 @@ if menu == "Mini Game Seru":
                 st.session_state.clue_used = True
                 sifat = "Genap" if st.session_state.target % 2 == 0 else "Ganjil"
                 kelipatan_5 = "Ya" if st.session_state.target % 5 == 0 else "Tidak"
-                st.info(f"💡 *CLUE:* Angka rahasia berstatus *{sifat}* dan kelipatan 5 adalah *{kelipatan_5}*!")
+                st.session_state.clue_text = f"💡 *CLUE:* Angka rahasia berstatus *{sifat}* dan kelipatan 5 adalah *{kelipatan_5}*!"
             else:
-                st.warning("⚠️ Clue sudah digunakan untuk ronde ini!")
+                st.session_state.clue_text = "⚠️ Clue sudah digunakan untuk ronde ini!"
+
+        # Tampilkan Clue jika ada
+        if st.session_state.clue_text:
+            st.info(st.session_state.clue_text)
 
         # Logika Tombol Kirim Tebakan
         if kirim_btn:
@@ -120,18 +126,23 @@ if menu == "Mini Game Seru":
             
             if tebakan == st.session_state.target:
                 st.session_state.win = True
+                st.session_state.message = ""
                 st.balloons()
             elif tebakan < st.session_state.target:
                 st.session_state.lives -= 1
-                st.warning(f"💡 Tebakanmu (*{tebakan}) terlalu **KECIL*! Cari angka yang lebih besar.")
+                st.session_state.message = f"💡 Tebakanmu (*{tebakan}) terlalu **KECIL*! Cari angka yang lebih besar."
             else:
                 st.session_state.lives -= 1
-                st.warning(f"💡 Tebakanmu (*{tebakan}) terlalu **BESAR*! Cari angka yang lebih kecil.")
+                st.session_state.message = f"💡 Tebakanmu (*{tebakan}) terlalu **BESAR*! Cari angka yang lebih kecil."
                 
             if st.session_state.lives <= 0:
                 st.session_state.game_over = True
             
             st.rerun()
+
+        # Tampilkan Pesan Hasil Tebakan Terakhir
+        if st.session_state.message:
+            st.warning(st.session_state.message)
 
     # Kondisi Menang
     if st.session_state.win:
@@ -154,9 +165,9 @@ if menu == "Mini Game Seru":
         del st.session_state.target
         st.rerun()
 
-# =========================================================
+
 # HALAMAN 2: FORMULIR KRITIK & PESAN (Terhubung Google Sheets)
-# =========================================================
+
 elif menu == "Kritik & Pesan":
     st.title("📝 Halaman Kritik & Pesan")
     st.write("Silakan isi formulir di bawah ini, data akan langsung masuk ke Google Sheets secara permanen.")
