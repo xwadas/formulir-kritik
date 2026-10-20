@@ -156,6 +156,7 @@ def navigate_to(page_name):
 if st.session_state.current_page == "Lobby Utama":
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
+    st.write("")
     st.write("---")
     
     if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
