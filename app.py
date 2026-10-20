@@ -9,16 +9,15 @@ import base64
 # KONFIGURASI HALAMAN
 # =========================================================
 st.set_page_config(
-    page_title="Aplikasi Lengkap dengan Latar Belakang & Game",
-    page_icon="🎮",
+    page_title="Aplikasi Lobby, Game, & Formulir",
+    page_icon="🌟",
     layout="centered",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG DENGAN CSS KUSTOM
+# MENAMBAHKAN LATAR BELAKANG & ANIMASI KUSTOM DENGAN CSS
 # =========================================================
-# Pastikan file 'background.jpg' sudah diunggah ke repositori GitHub kamu
 background_image_path = "background.jpg"
 
 def add_bg_from_local(image_file):
@@ -28,6 +27,17 @@ def add_bg_from_local(image_file):
         st.markdown(
         f"""
         <style>
+        @keyframes fadeIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(20px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+
         .stApp {{
             background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
             background-size: cover;
@@ -35,40 +45,63 @@ def add_bg_from_local(image_file):
             background-repeat: no-repeat;
             background-attachment: fixed;
         }}
+
         .block-container {{
-            background-color: rgba(255, 255, 255, 0.92);
-            border-radius: 12px;
+            animation: fadeIn 0.8s ease-out;
+            background-color: rgba(255, 255, 255, 0.93);
+            border-radius: 14px;
             padding: 2.5rem;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }}
+
+        .stButton > button {{
+            transition: all 0.3s ease-in-out;
+            border-radius: 8px;
+        }}
+        
+        .stButton > button:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }}
         </style>
         """,
         unsafe_allow_html=True
         )
     except FileNotFoundError:
-        pass # Jika file gambar belum ada, aplikasi tetap berjalan normal tanpa background
+        pass 
 
 add_bg_from_local(background_image_path)
 
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-# Ganti teks di dalam tanda kutip dengan URL Web App dari Google Apps Script kamu
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
 
 # =========================================================
-# NAVIGATION BAR / PILIHAN MENU
+# LOBBY UTAMA (Tampil di bagian paling atas)
 # =========================================================
-st.sidebar.title("📌 Navigation Menu")
-menu = st.sidebar.radio(
-    "Pilih Halaman:",
-    ["Mini Game Seru", "Kritik & Pesan"]
+st.title("🌟 Selamat Datang di Lobby Utama!")
+st.write("Jelajahi aplikasi interaktif kami: mainkan game tebak angka yang menantang atau kirimkan kritik & saranmu!")
+
+# Banner gambar lobby (bisa diganti sesuai keinginan)
+st.image("https://picsum.photos/800/300", use_container_width=True, caption="Area Lobby Utama")
+st.write("---")
+
+# =========================================================
+# NAVIGASI (Dipindah ke bawah Lobby dalam bentuk pilihan menu)
+# =========================================================
+st.subheader("📌 Pilih Menu Navigasi")
+menu = st.radio(
+    "Pilih halaman yang ingin dituju:",
+    ["🎮 Mini Game Seru", "📝 Kritik & Pesan"],
+    horizontal=True
 )
+st.write("---")
 
-
-# HALAMAN 1: MINI GAME SERU (Diperbaiki agar clue muncul)
-
-if menu == "Mini Game Seru":
+# =========================================================
+# HALAMAN 1: MINI GAME SERU (Level, Nyawa, & Clue)
+# =========================================================
+if menu == "🎮 Mini Game Seru":
     st.title("🎮 Arcade: Tebak Angka Misterius")
     st.write("Uji keberuntungan dan logika-mu! Temukan angka rahasia sebelum nyawamu habis.")
     st.write("---")
@@ -165,10 +198,10 @@ if menu == "Mini Game Seru":
         del st.session_state.target
         st.rerun()
 
-
-# HALAMAN 2: FORMULIR KRITIK & PESAN (Terhubung Google Sheets)
-
-elif menu == "Kritik & Pesan":
+# =========================================================
+# HALAMAN 2: FORMULIR KRITIK & PESAN (Nama & No HP Opsional)
+# =========================================================
+elif menu == "📝 Kritik & Pesan":
     st.title("📝 Halaman Kritik & Pesan")
     st.write("Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional (boleh dikosongkan).")
     st.write("---")
@@ -197,7 +230,6 @@ elif menu == "Kritik & Pesan":
                 if not pesan.strip():
                     st.error("Pesan wajib diisi!")
                 else:
-                    # Jika nama atau no_hp kosong, beri nilai default
                     final_nama = nama.strip() if nama.strip() else "Anonim"
                     final_no_hp = no_hp.strip() if no_hp.strip() else "-"
                     
