@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
+# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI DENGAN EFEK HALUS
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -51,35 +51,36 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    @keyframes fadeIn {{
-        from {{
+    /* Definisi Animasi Transisi Halaman (Page Entrance) */
+    @keyframes pageTransition {{
+        0% {{
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.98);
         }}
-        to {{
+        100% {{
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }}
     }}
 
     {bg_css}
 
-    /* Kontainer sangat transparan & memenuhi layar, hanya menyisakan sisi pinggir tipis */
+    /* Kontainer utama yang akan teranimasi setiap berpindah halaman */
     .block-container {{
-        animation: fadeIn 0.7s ease-out;
-        background: rgba(255, 255, 255, 0.15) !important;
+        animation: pageTransition 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        background: rgba(255, 255, 255, 0.2) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 15px;
-        padding: 1.5rem;
+        padding: 2rem;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        max-width: 98% !important;
-        width: 98% !important;
-        margin: 5px auto;
+        max-width: 96% !important;
+        width: 96% !important;
+        margin: 10px auto;
     }}
 
-    /* Warna teks utama hitam agar jelas di atas latar transparan */
+    /* Warna teks utama (hitam agar jelas di atas latar transparan cerah) */
     .block-container h1, 
     .block-container h2, 
     .block-container h3, 
@@ -98,7 +99,7 @@ def apply_custom_style(image_file):
         font-size: 1.6rem;
     }}
 
-    /* Tombol hitam dengan teks PUTIH */
+    /* Tombol warna hitam dengan teks putih */
     .stButton > button {{
         width: 100% !important;
         border-radius: 10px;
@@ -111,13 +112,13 @@ def apply_custom_style(image_file):
         transition: all 0.3s ease-in-out;
     }}
 
-    /* Memastikan teks/ikon di dalam tombol ikut menjadi putih */
     .stButton > button *, .stButton > button p {{
         color: #ffffff !important;
     }}
     
     .stButton > button:hover {{
         background-color: #333333 !important;
+        color: #ffffff !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
@@ -138,7 +139,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
+WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
@@ -156,13 +157,12 @@ def navigate_to(page_name):
 if st.session_state.current_page == "Lobby Utama":
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
-    st.write("")
     st.write("---")
     
     if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
         navigate_to("Mini Game Seru")
     
-    st.write("")
+    st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
         navigate_to("Kritik & Pesan")
 
@@ -201,9 +201,9 @@ elif st.session_state.current_page == "Mini Game Seru":
     if not st.session_state.game_over and not st.session_state.win:
         tebakan = st.number_input(f"Masukkan angka (1 - {max_val}):", min_value=1, max_value=max_val, value=1, step=1)
         
-        st.write("")
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         kirim_btn = st.button("Kirim Tebakan 🚀", use_container_width=True)
-        st.write("")
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         clue_btn = st.button("🔍 Minta Clue", use_container_width=True)
 
         if clue_btn:
@@ -253,7 +253,7 @@ elif st.session_state.current_page == "Mini Game Seru":
             del st.session_state.target
             st.rerun()
 
-    st.write("")
+    st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     if st.button("🔄 Reset / Ganti Angka Baru", use_container_width=True):
         del st.session_state.target
         st.rerun()
@@ -276,11 +276,11 @@ elif st.session_state.current_page == "Kritik & Pesan":
     if st.session_state.form_submitted_success:
         st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
         st.balloons()
-        st.write("")
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         if st.button("🔄 Kirim Pesan Lain", use_container_width=True):
             st.session_state.form_submitted_success = False
             st.rerun()
-        st.write("")
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         if st.button("🏠 Kembali ke Lobby", use_container_width=True):
             st.session_state.form_submitted_success = False
             navigate_to("Lobby Utama")
@@ -291,7 +291,7 @@ elif st.session_state.current_page == "Kritik & Pesan":
             no_hp = st.text_input("No HP / WhatsApp (Opsional)")
             pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
             
-            st.write("")
+            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             submitted = st.form_submit_button("Kirim Pesan 🚀", use_container_width=True)
             
             if submitted:
@@ -301,6 +301,7 @@ elif st.session_state.current_page == "Kritik & Pesan":
                     final_nama = nama.strip() if nama.strip() else "Anonim"
                     final_no_hp = no_hp.strip() if no_hp.strip() else "-"
                     
+                    # Pengaturan waktu WIB (UTC+7)
                     wib = timezone(timedelta(hours=7))
                     waktu_kirim = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
                     
