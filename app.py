@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & ANIMASI CSS KUSTOM
+# MENAMBAHKAN LATAR BELAKANG & CSS (TEKS HITAM & MOBILE-FRIENDLY)
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -27,7 +27,7 @@ def apply_custom_style(image_file):
             encoded_string = base64.b64encode(f.read())
         bg_css = f"""
         .stApp {{
-            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("data:image/jpg;base64,{encoded_string.decode()}");
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("data:image/jpg;base64,{encoded_string.decode()}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -64,29 +64,62 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
-    /* Membuat semua judul (h1 / st.title) berada di tengah */
-    .block-container h1 {{
-        text-align: center;
-    }}
-
-    /* Animasi muncul otomatis setiap kali berpindah halaman */
+    /* Kontainer dengan efek kaca transparan yang pas untuk teks hitam */
     .block-container {{
         animation: fadeIn 0.7s ease-out;
-        background-color: rgba(255, 255, 255, 0.94);
-        border-radius: 16px;
-        padding: 2.5rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        background: rgba(255, 255, 255, 0.88) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        max-width: 100%;
+        margin: 1rem auto;
     }}
 
+    /* Memastikan seluruh teks berwarna HITAM */
+    .block-container h1, 
+    .block-container h2, 
+    .block-container h3, 
+    .block-container p, 
+    .block-container span, 
+    .block-container label,
+    .block-container .stMarkdown,
+    .block-container [data-testid="stMetricValue"],
+    .block-container [data-testid="stMetricLabel"] {{
+        color: #000000 !important;
+    }}
+
+    .block-container h1 {{
+        text-align: center;
+        font-size: 1.6rem;
+    }}
+
+    /* Tombol agar pas dan mudah ditekan di HP */
     .stButton > button {{
-        transition: all 0.3s ease-in-out;
-        border-radius: 8px;
+        width: 100% !important;
+        border-radius: 12px;
         font-weight: bold;
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+        background-color: #1f1f1f;
+        color: #ffffff !important;
+        border: none;
+        transition: all 0.3s ease-in-out;
     }}
     
     .stButton > button:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        transform: translateY(-2px);
+        background-color: #000000;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }}
+
+    /* Penyesuaian input form agar nyaman di layar kecil */
+    .stTextInput input, .stTextArea textarea {{
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        color: #000000 !important;
     }}
     </style>
     """,
@@ -98,7 +131,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
+WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
@@ -118,13 +151,12 @@ if st.session_state.current_page == "Lobby Utama":
     st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
     st.write("---")
     
-    col_l1, col_l2 = st.columns(2)
-    with col_l1:
-        if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
-            navigate_to("Mini Game Seru")
-    with col_l2:
-        if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
-            navigate_to("Kritik & Pesan")
+    if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
+        navigate_to("Mini Game Seru")
+    
+    st.write("")
+    if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
+        navigate_to("Kritik & Pesan")
 
 # =========================================================
 # HALAMAN 2: MINI GAME SERU
@@ -158,13 +190,12 @@ elif st.session_state.current_page == "Mini Game Seru":
         st.metric(label="Total Tebakan 🎯", value=st.session_state.attempts)
 
     if not st.session_state.game_over and not st.session_state.win:
-        tebakan = st.number_input(f"Masukkan angka antara 1 sampai {max_val}:", min_value=1, max_value=max_val, value=1, step=1)
+        tebakan = st.number_input(f"Masukkan angka (1 - {max_val}):", min_value=1, max_value=max_val, value=1, step=1)
         
-        col_btn1, col_btn2 = st.columns(2)
-        with col_btn1:
-            kirim_btn = st.button("Kirim Tebakan 🚀", use_container_width=True)
-        with col_btn2:
-            clue_btn = st.button("🔍 Minta Clue", use_container_width=True)
+        st.write("")
+        kirim_btn = st.button("Kirim Tebakan 🚀", use_container_width=True)
+        st.write("")
+        clue_btn = st.button("🔍 Minta Clue", use_container_width=True)
 
         if clue_btn:
             if not st.session_state.clue_used:
@@ -203,18 +234,18 @@ elif st.session_state.current_page == "Mini Game Seru":
     if st.session_state.win:
         st.success(f"🎉 **LUAR BIASA! Kamu Menang!** Angka rahasianya adalah **{st.session_state.target}**.")
         st.info(f"Kamu berhasil menebaknya dalam {st.session_state.attempts} kali percobaan.")
-        if st.button("Main Lagi 🔄"):
+        if st.button("Main Lagi 🔄", use_container_width=True):
             del st.session_state.target
             st.rerun()
 
     if st.session_state.game_over:
         st.error(f"💀 **GAME OVER!** Nyawamu habis. Angka rahasia yang benar adalah **{st.session_state.target}**.")
-        if st.button("Coba Lagi 🔄"):
+        if st.button("Coba Lagi 🔄", use_container_width=True):
             del st.session_state.target
             st.rerun()
 
     st.write("")
-    if st.button("🔄 Reset / Ganti Angka Baru"):
+    if st.button("🔄 Reset / Ganti Angka Baru", use_container_width=True):
         del st.session_state.target
         st.rerun()
 
@@ -226,7 +257,7 @@ elif st.session_state.current_page == "Kritik & Pesan":
         navigate_to("Lobby Utama")
         
     st.title("📝 Halaman Kritik & Pesan")
-    st.write("Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional (boleh dikosongkan).")
+    st.write("Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.")
     st.write("---")
     
     if "form_submitted_success" not in st.session_state:
@@ -236,15 +267,13 @@ elif st.session_state.current_page == "Kritik & Pesan":
         st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
         st.balloons()
         st.write("")
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
-            if st.button("🔄 Kirim Pesan Lain"):
-                st.session_state.form_submitted_success = False
-                st.rerun()
-        with col_f2:
-            if st.button("🏠 Kembali ke Lobby"):
-                st.session_state.form_submitted_success = False
-                navigate_to("Lobby Utama")
+        if st.button("🔄 Kirim Pesan Lain", use_container_width=True):
+            st.session_state.form_submitted_success = False
+            st.rerun()
+        st.write("")
+        if st.button("🏠 Kembali ke Lobby", use_container_width=True):
+            st.session_state.form_submitted_success = False
+            navigate_to("Lobby Utama")
             
     else:
         with st.form("form_kritik_pesan"):
@@ -252,7 +281,8 @@ elif st.session_state.current_page == "Kritik & Pesan":
             no_hp = st.text_input("No HP / WhatsApp (Opsional)")
             pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
             
-            submitted = st.form_submit_button("Kirim Pesan 🚀")
+            st.write("")
+            submitted = st.form_submit_button("Kirim Pesan 🚀", use_container_width=True)
             
             if submitted:
                 if not pesan.strip():
