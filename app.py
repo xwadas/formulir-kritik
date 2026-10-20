@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import requests
 import random
 import base64
@@ -300,7 +300,8 @@ elif st.session_state.current_page == "Kritik & Pesan":
                     final_nama = nama.strip() if nama.strip() else "Anonim"
                     final_no_hp = no_hp.strip() if no_hp.strip() else "-"
                     
-                    waktu_kirim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                   wib = timezone(timedelta(hours=7))
+                    waktu_kirim = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
                     
                     payload = {
                         "waktu": waktu_kirim,
