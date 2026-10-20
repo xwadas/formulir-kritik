@@ -138,7 +138,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
