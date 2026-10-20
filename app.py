@@ -321,7 +321,10 @@ with st.container(key=st.session_state.current_page):
                         }
                         
                         try:
-                            response = requests.post(WEB_APP_URL, json=payload)
+                            # Menampilkan indikator loading saat mengirim data
+                            with st.spinner("⏳ Mengirim pesan ke server, mohon tunggu..."):
+                                response = requests.post(WEB_APP_URL, json=payload)
+                                
                             if response.status_code == 200:
                                 st.session_state.form_submitted_success = True
                                 st.rerun()
