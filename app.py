@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI HALAMAN
+# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI DINAMIS
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -51,7 +51,7 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Definisi Animasi Transisi yang Berjalan Tiap Halaman Berubah */
+    /* Definisi Animasi Transisi Halus */
     @keyframes pageAnimation {{
         0% {{
             opacity: 0;
@@ -65,6 +65,7 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
+    /* Memastikan animasi berputar setiap kali wrapper berubah */
     .page-wrapper {{
         animation: pageAnimation 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
@@ -154,11 +155,14 @@ def navigate_to(page_name):
     st.session_state.current_page = page_name
     st.rerun()
 
+# Helper untuk membuat key animasi unik tiap halaman
+page_slug = st.session_state.current_page.lower().replace(" ", "-")
+
 # =========================================================
 # HALAMAN 1: LOBBY UTAMA
 # =========================================================
 if st.session_state.current_page == "Lobby Utama":
-    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-wrapper page-{page_slug}">', unsafe_allow_html=True)
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
     st.write("---")
@@ -175,7 +179,7 @@ if st.session_state.current_page == "Lobby Utama":
 # HALAMAN 2: MINI GAME SERU
 # =========================================================
 elif st.session_state.current_page == "Mini Game Seru":
-    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-wrapper page-{page_slug}">', unsafe_allow_html=True)
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
@@ -269,7 +273,7 @@ elif st.session_state.current_page == "Mini Game Seru":
 # HALAMAN 3: KRITIK & PESAN
 # =========================================================
 elif st.session_state.current_page == "Kritik & Pesan":
-    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-wrapper page-{page_slug}">', unsafe_allow_html=True)
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
