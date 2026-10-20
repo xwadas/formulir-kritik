@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI DENGAN EFEK HALUS
+# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI HALAMAN
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -51,11 +51,11 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Definisi Animasi Transisi Halaman (Page Entrance) */
-    @keyframes pageTransition {{
+    /* Definisi Animasi Transisi yang Berjalan Tiap Halaman Berubah */
+    @keyframes pageAnimation {{
         0% {{
             opacity: 0;
-            transform: translateY(30px) scale(0.98);
+            transform: translateY(25px) scale(0.98);
         }}
         100% {{
             opacity: 1;
@@ -65,9 +65,12 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
-    /* Kontainer utama yang akan teranimasi setiap berpindah halaman */
+    .page-wrapper {{
+        animation: pageAnimation 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }}
+
+    /* Kontainer transparan penuh & menutup layar dengan sisa pinggir tipis */
     .block-container {{
-        animation: pageTransition 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         background: rgba(255, 255, 255, 0.2) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
@@ -80,7 +83,7 @@ def apply_custom_style(image_file):
         margin: 10px auto;
     }}
 
-    /* Warna teks utama (hitam agar jelas di atas latar transparan cerah) */
+    /* Warna teks utama hitam agar jelas di atas latar transparan */
     .block-container h1, 
     .block-container h2, 
     .block-container h3, 
@@ -155,6 +158,7 @@ def navigate_to(page_name):
 # HALAMAN 1: LOBBY UTAMA
 # =========================================================
 if st.session_state.current_page == "Lobby Utama":
+    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
     st.write("---")
@@ -165,11 +169,13 @@ if st.session_state.current_page == "Lobby Utama":
     st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
         navigate_to("Kritik & Pesan")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
 # HALAMAN 2: MINI GAME SERU
 # =========================================================
 elif st.session_state.current_page == "Mini Game Seru":
+    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
@@ -257,11 +263,13 @@ elif st.session_state.current_page == "Mini Game Seru":
     if st.button("🔄 Reset / Ganti Angka Baru", use_container_width=True):
         del st.session_state.target
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
 # HALAMAN 3: KRITIK & PESAN
 # =========================================================
 elif st.session_state.current_page == "Kritik & Pesan":
+    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
     st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
@@ -321,3 +329,4 @@ elif st.session_state.current_page == "Kritik & Pesan":
                             st.error("❌ Gagal mengirim data ke server.")
                     except Exception as e:
                         st.error(f"Terjadi kesalahan: {e}")
+    st.markdown('</div>', unsafe_allow_html=True)
