@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS (TEKS HITAM & MOBILE-FRIENDLY)
+# MENAMBAHKAN LATAR BELAKANG & CSS (TRANSPARAN PENUH & TOMBOL HITAM PUTIH)
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -64,21 +64,22 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
-    /* Kontainer dengan efek kaca transparan yang pas untuk teks hitam */
+    /* Kontainer transparan penuh & menutup layar dengan sisa pinggir tipis */
     .block-container {{
         animation: fadeIn 0.7s ease-out;
-        background: rgba(255, 255, 255, 0.88) !important;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        max-width: 100%;
-        margin: 1rem auto;
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        max-width: 96% !important;
+        width: 96% !important;
+        margin: 10px auto;
     }}
 
-    /* Memastikan seluruh teks berwarna HITAM */
+    /* Warna teks utama (hitam agar jelas di atas latar transparan cerah) */
     .block-container h1, 
     .block-container h2, 
     .block-container h3, 
@@ -89,6 +90,7 @@ def apply_custom_style(image_file):
     .block-container [data-testid="stMetricValue"],
     .block-container [data-testid="stMetricLabel"] {{
         color: #000000 !important;
+        font-weight: 500;
     }}
 
     .block-container h1 {{
@@ -96,29 +98,30 @@ def apply_custom_style(image_file):
         font-size: 1.6rem;
     }}
 
-    /* Tombol agar pas dan mudah ditekan di HP */
+    /* Tombol warna hitam dengan teks putih */
     .stButton > button {{
         width: 100% !important;
-        border-radius: 12px;
+        border-radius: 10px;
         font-weight: bold;
         padding: 0.6rem 1rem;
         font-size: 1rem;
-        background-color: #1f1f1f;
+        background-color: #000000 !important;
         color: #ffffff !important;
         border: none;
         transition: all 0.3s ease-in-out;
     }}
     
     .stButton > button:hover {{
+        background-color: #333333 !important;
+        color: #ffffff !important;
         transform: translateY(-2px);
-        background-color: #000000;
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
 
     /* Penyesuaian input form agar nyaman di layar kecil */
     .stTextInput input, .stTextArea textarea {{
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.95) !important;
+        background-color: rgba(255, 255, 255, 0.85) !important;
         color: #000000 !important;
     }}
     </style>
@@ -162,6 +165,7 @@ if st.session_state.current_page == "Lobby Utama":
 # HALAMAN 2: MINI GAME SERU
 # =========================================================
 elif st.session_state.current_page == "Mini Game Seru":
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
         
@@ -253,6 +257,7 @@ elif st.session_state.current_page == "Mini Game Seru":
 # HALAMAN 3: KRITIK & PESAN
 # =========================================================
 elif st.session_state.current_page == "Kritik & Pesan":
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     if st.button("⬅️ Kembali ke Lobby"):
         navigate_to("Lobby Utama")
         
