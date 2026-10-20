@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS (TRANSPARAN PENUH & TOMBOL HITAM PUTIH)
+# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -64,22 +64,22 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
-    /* Kontainer transparan penuh & menutup layar dengan sisa pinggir tipis */
+    /* Kontainer sangat transparan & memenuhi layar, hanya menyisakan sisi pinggir tipis */
     .block-container {{
         animation: fadeIn 0.7s ease-out;
-        background: rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 15px;
-        padding: 2rem;
+        padding: 1.5rem;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        max-width: 96% !important;
-        width: 96% !important;
-        margin: 10px auto;
+        max-width: 98% !important;
+        width: 98% !important;
+        margin: 5px auto;
     }}
 
-    /* Warna teks utama (hitam agar jelas di atas latar transparan cerah) */
+    /* Warna teks utama hitam agar jelas di atas latar transparan */
     .block-container h1, 
     .block-container h2, 
     .block-container h3, 
@@ -98,7 +98,7 @@ def apply_custom_style(image_file):
         font-size: 1.6rem;
     }}
 
-    /* Tombol warna hitam dengan teks putih */
+    /* Tombol hitam dengan teks PUTIH */
     .stButton > button {{
         width: 100% !important;
         border-radius: 10px;
@@ -110,15 +110,19 @@ def apply_custom_style(image_file):
         border: none;
         transition: all 0.3s ease-in-out;
     }}
+
+    /* Memastikan teks/ikon di dalam tombol ikut menjadi putih */
+    .stButton > button *, .stButton > button p {{
+        color: #ffffff !important;
+    }}
     
     .stButton > button:hover {{
         background-color: #333333 !important;
-        color: #ffffff !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
 
-    /* Penyesuaian input form agar nyaman di layar kecil */
+    /* Penyesuaian input form */
     .stTextInput input, .stTextArea textarea {{
         border-radius: 10px;
         background-color: rgba(255, 255, 255, 0.85) !important;
