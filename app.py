@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import requests
 import random
 import base64
+from streamlit_qrcode_scanner import qrcode_scanner
 
 # =========================================================
 # KONFIGURASI HALAMAN
@@ -16,7 +17,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS ANIMASI HALAMAN
+# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -51,7 +52,7 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Definisi Animasi Transisi Masuk Halaman */
+    /* Animasi Transisi Halaman */
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
@@ -69,7 +70,7 @@ def apply_custom_style(image_file):
         animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
-    /* Kontainer transparan penuh & menutup layar dengan sisa pinggir tipis */
+    /* Kontainer transparan penuh dengan sisa pinggir tipis */
     .block-container {{
         background: rgba(255, 255, 255, 0.2) !important;
         backdrop-filter: blur(10px);
@@ -83,7 +84,7 @@ def apply_custom_style(image_file):
         margin: 10px auto;
     }}
 
-    /* Warna teks utama hitam agar jelas di atas latar transparan */
+    /* Warna teks utama hitam */
     .block-container h1, 
     .block-container h2, 
     .block-container h3, 
@@ -126,7 +127,7 @@ def apply_custom_style(image_file):
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
 
-    /* Penyesuaian input form */
+    /* Input form */
     .stTextInput input, .stTextArea textarea {{
         border-radius: 10px;
         background-color: rgba(255, 255, 255, 0.85) !important;
@@ -155,7 +156,7 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTAINER UTAMA DENGAN KEY DINAMIS (MEMICU ANIMASI ULANG)
+# KONTAINER UTAMA DENGAN KEY DINAMIS
 # =========================================================
 with st.container(key=st.session_state.current_page):
     st.markdown('<div class="page-animate">', unsafe_allow_html=True)
@@ -171,6 +172,10 @@ with st.container(key=st.session_state.current_page):
         if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
             navigate_to("Mini Game Seru")
         
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        if st.button("📷 Masuk ke Menu Absensi QR", use_container_width=True):
+            navigate_to("Absensi QR")
+
         st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
         if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
             navigate_to("Kritik & Pesan")
@@ -268,7 +273,65 @@ with st.container(key=st.session_state.current_page):
             st.rerun()
 
     # ---------------------------------------------------------
-    # HALAMAN 3: KRITIK & PESAN
+    # HALAMAN 3: ABSENSI QR BARCODE
+    # ---------------------------------------------------------
+    elif st.session_state.current_page == "Absensi QR":
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        if st.button("⬅️ Kembali ke Lobby"):
+            navigate_to("Lobby Utama")
+            
+        st.title("📷 Menu Absensi QR / Barcode")
+        st.write("Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.")
+        st.write("---")
+
+        # Inisialisasi status absensi QR jika belum ada
+        if "attendance_success" not in st.session_state:
+            st.session_state.attendance_success = False
+        if "last_scanned_qr" not in st.session_state:
+            st.session_state.last_scanned_qr = None
+
+        if st.session_state.attendance_success:
+            st.success("🎉 Absensi Berhasil Tercatat!")
+            st.info(f"Data QR Terakhir: **{st.session_state.last_scanned_qr}**")
+            st.balloons()
+            
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+            if st.button("🔄 Baca QR Code Lagi", use_container_width=True):
+                st.session_state.attendance_success = False
+                st.session_state.last_scanned_qr = None
+                st.rerun()
+        else:
+            # Memanggil komponen QR Code Scanner
+            qr_code = qrcode_scanner(key='qrcode_scanner')
+
+            if qr_code:
+                # Cek agar tidak mengirim data berulang kali pada QR yang sama secara instan
+                if qr_code != st.session_state.last_scanned_qr:
+                    st.session_state.last_scanned_qr = qr_code
+                    
+                    wib = timezone(timedelta(hours=7))
+                    waktu_absen = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
+                    
+                    payload = {
+                        "tipe": "absensi",
+                        "waktu": waktu_absen,
+                        "data_qr": qr_code
+                    }
+                    
+                    try:
+                        with st.spinner(f"⏳ Mengirim absensi untuk **{qr_code}** ke server..."):
+                            response = requests.post(WEB_APP_URL, json=payload)
+                            
+                        if response.status_code == 200:
+                            st.session_state.attendance_success = True
+                            st.rerun()
+                        else:
+                            st.error("❌ Gagal mengirim absensi ke server.")
+                    except Exception as e:
+                        st.error(f"Terjadi kesalahan koneksi: {e}")
+
+    # ---------------------------------------------------------
+    # HALAMAN 4: KRITIK & PESAN
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Kritik & Pesan":
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
@@ -314,6 +377,7 @@ with st.container(key=st.session_state.current_page):
                         waktu_kirim = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
                         
                         payload = {
+                            "tipe": "kritik_pesan",
                             "waktu": waktu_kirim,
                             "nama": final_nama,
                             "no_hp": final_no_hp,
@@ -321,7 +385,6 @@ with st.container(key=st.session_state.current_page):
                         }
                         
                         try:
-                            # Menampilkan indikator loading saat mengirim data
                             with st.spinner("⏳ Mengirim pesan ke server, mohon tunggu..."):
                                 response = requests.post(WEB_APP_URL, json=payload)
                                 
