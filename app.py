@@ -84,6 +84,20 @@ def apply_custom_style(image_file):
         margin: 10px auto;
     }}
 
+    /* Memperlebar komponen QR Scanner agar pas dan penuh di layar */
+    iframe[title*="streamlit_qrcode_scanner"], 
+    div[data-testid="stIframe"] {{
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 10px;
+    }}
+    
+    video {{
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 10px;
+    }}
+
     /* Warna teks utama hitam */
     .block-container h1, 
     .block-container h2, 
@@ -143,7 +157,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
+WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
@@ -156,7 +170,7 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTAINER UTAMA DENGAN KEY DINAMIS
+# KONTAINER UTAMA DENGAN KEY DINAMIS (MEMICU ANIMASI ULANG)
 # =========================================================
 with st.container(key=st.session_state.current_page):
     st.markdown('<div class="page-animate">', unsafe_allow_html=True)
@@ -284,7 +298,6 @@ with st.container(key=st.session_state.current_page):
         st.write("Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.")
         st.write("---")
 
-        # Inisialisasi status absensi QR jika belum ada
         if "attendance_success" not in st.session_state:
             st.session_state.attendance_success = False
         if "last_scanned_qr" not in st.session_state:
@@ -301,11 +314,9 @@ with st.container(key=st.session_state.current_page):
                 st.session_state.last_scanned_qr = None
                 st.rerun()
         else:
-            # Memanggil komponen QR Code Scanner
             qr_code = qrcode_scanner(key='qrcode_scanner')
 
             if qr_code:
-                # Cek agar tidak mengirim data berulang kali pada QR yang sama secara instan
                 if qr_code != st.session_state.last_scanned_qr:
                     st.session_state.last_scanned_qr = qr_code
                     
