@@ -115,7 +115,7 @@ def apply_custom_style(image_file):
     .block-container h1 {{
         text-align: center;
         font-size: 1.7rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.3rem;
     }}
 
     /* --- GAYA TOMBOL MODERN & ESTETIK --- */
@@ -123,7 +123,7 @@ def apply_custom_style(image_file):
         width: 100% !important;
         border-radius: 12px;
         font-weight: 600;
-        padding: 0.75rem 1.2rem;
+        padding: 0.7rem 1rem;
         font-size: 1rem;
         background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%) !important;
         color: #ffffff !important;
@@ -139,13 +139,9 @@ def apply_custom_style(image_file):
     .stButton > button:hover {{
         background: linear-gradient(135deg, #2d2d2d 100%, #404040 0%) !important;
         color: #ffffff !important;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         border-color: rgba(255, 255, 255, 0.4) !important;
-    }}
-
-    .stButton > button:active {{
-        transform: translateY(-1px);
     }}
 
     /* Input form agar lebih rapi */
@@ -206,11 +202,13 @@ with st.container(key=st.session_state.current_page):
     # HALAMAN GAME: CODE BREAKER (STRATEGI ANALITIK)
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Code Breaker":
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-        if st.button("⬅️ Kembali ke Lobby"):
-            navigate_to("Lobby Utama")
+        # Tombol kembali dibuat compact menggunakan pembagian kolom
+        col_back, _ = st.columns([1.3, 2.7])
+        with col_back:
+            if st.button("⬅️ Kembali", use_container_width=True):
+                navigate_to("Lobby Utama")
             
-        st.title("🕵️‍♂️ Code Breaker (Strategi Kode)")
+        st.title("🕵️‍♂️ Code Breaker")
         st.markdown("<p style='text-align: center;'>Pecahkan 3 digit angka rahasia unik (1-9) menggunakan strategi analisis petunjuk!</p>", unsafe_allow_html=True)
         st.write("---")
 
@@ -261,11 +259,12 @@ with st.container(key=st.session_state.current_page):
     # HALAMAN 2: ABSENSI QR BARCODE
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Absensi QR":
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-        if st.button("⬅️ Kembali ke Lobby"):
-            navigate_to("Lobby Utama")
+        col_back, _ = st.columns([1.3, 2.7])
+        with col_back:
+            if st.button("⬅️ Kembali", use_container_width=True):
+                navigate_to("Lobby Utama")
             
-        st.title("📷 Menu Absensi QR / Barcode")
+        st.title("📷 Menu Absensi QR")
         st.markdown("<p style='text-align: center;'>Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.</p>", unsafe_allow_html=True)
         st.write("---")
 
@@ -316,9 +315,10 @@ with st.container(key=st.session_state.current_page):
     # HALAMAN 3: KRITIK & PESAN
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Kritik & Pesan":
-        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-        if st.button("⬅️ Kembali ke Lobby"):
-            navigate_to("Lobby Utama")
+        col_back, _ = st.columns([1.3, 2.7])
+        with col_back:
+            if st.button("⬅️ Kembali", use_container_width=True):
+                navigate_to("Lobby Utama")
             
         st.title("📝 Halaman Kritik & Pesan")
         st.markdown("<p style='text-align: center;'>Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.</p>", unsafe_allow_html=True)
