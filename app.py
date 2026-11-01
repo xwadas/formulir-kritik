@@ -56,7 +56,7 @@ def apply_custom_style(image_file):
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
-            transform: translateY(25px) scale(0.98);
+            transform: translateY(20px) scale(0.99);
         }}
         100% {{
             opacity: 1;
@@ -67,21 +67,21 @@ def apply_custom_style(image_file):
     {bg_css}
 
     .page-animate {{
-        animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: pageSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
     /* Kontainer transparan penuh dengan sisa pinggir tipis */
     .block-container {{
-        background: rgba(255, 255, 255, 0.2) !important;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        background: rgba(255, 255, 255, 0.22) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 18px;
+        padding: 2.2rem;
+        box-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.35);
         max-width: 96% !important;
         width: 96% !important;
-        margin: 10px auto;
+        margin: 15px auto;
     }}
 
     /* Memperlebar komponen QR Scanner agar pas dan penuh di layar */
@@ -89,13 +89,13 @@ def apply_custom_style(image_file):
     div[data-testid="stIframe"] {{
         width: 100% !important;
         max-width: 100% !important;
-        border-radius: 10px;
+        border-radius: 12px;
     }}
     
     video {{
         width: 100% !important;
         height: auto !important;
-        border-radius: 10px;
+        border-radius: 12px;
     }}
 
     /* Warna teks utama hitam */
@@ -114,20 +114,22 @@ def apply_custom_style(image_file):
 
     .block-container h1 {{
         text-align: center;
-        font-size: 1.6rem;
+        font-size: 1.7rem;
+        margin-bottom: 0.5rem;
     }}
 
-    /* Tombol warna hitam dengan teks putih */
+    /* --- GAYA TOMBOL MODERN & ESTETIK --- */
     .stButton > button {{
         width: 100% !important;
-        border-radius: 10px;
-        font-weight: bold;
-        padding: 0.6rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 0.75rem 1.2rem;
         font-size: 1rem;
-        background-color: #000000 !important;
+        background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%) !important;
         color: #ffffff !important;
-        border: none;
-        transition: all 0.3s ease-in-out;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }}
 
     .stButton > button *, .stButton > button p {{
@@ -135,17 +137,23 @@ def apply_custom_style(image_file):
     }}
     
     .stButton > button:hover {{
-        background-color: #333333 !important;
+        background: linear-gradient(135deg, #2d2d2d 100%, #404040 0%) !important;
         color: #ffffff !important;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.4) !important;
     }}
 
-    /* Input form */
+    .stButton > button:active {{
+        transform: translateY(-1px);
+    }}
+
+    /* Input form agar lebih rapi */
     .stTextInput input, .stTextArea textarea {{
-        border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.85) !important;
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.88) !important;
         color: #000000 !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
     }}
     </style>
     """,
@@ -157,7 +165,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
+WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
@@ -180,122 +188,85 @@ with st.container(key=st.session_state.current_page):
     # ---------------------------------------------------------
     if st.session_state.current_page == "Lobby Utama":
         st.title("🌟 Selamat Datang di Lobby Utama!")
-        st.write("Jelajahi fitur interaktif aplikasi kami melalui tombol di bawah ini:")
+        st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
         st.write("---")
         
-        if st.button("🎮 Masuk ke Mini Game", use_container_width=True):
-            navigate_to("Mini Game Seru")
+        if st.button("🎮 Mainkan Game Code Breaker", use_container_width=True):
+            navigate_to("Code Breaker")
         
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
         if st.button("📷 Masuk ke Menu Absensi QR", use_container_width=True):
             navigate_to("Absensi QR")
 
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
         if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
             navigate_to("Kritik & Pesan")
 
     # ---------------------------------------------------------
-    # HALAMAN 2: MINI GAME SERU
+    # HALAMAN GAME: CODE BREAKER (STRATEGI ANALITIK)
     # ---------------------------------------------------------
-    elif st.session_state.current_page == "Mini Game Seru":
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    elif st.session_state.current_page == "Code Breaker":
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         if st.button("⬅️ Kembali ke Lobby"):
             navigate_to("Lobby Utama")
             
-        st.title("🎮 Arcade: Tebak Angka Misterius")
-        st.write("Uji keberuntungan dan logika-mu! Temukan angka rahasia sebelum nyawamu habis.")
+        st.title("🕵️‍♂️ Code Breaker (Strategi Kode)")
+        st.markdown("<p style='text-align: center;'>Pecahkan 3 digit angka rahasia unik (1-9) menggunakan strategi analisis petunjuk!</p>", unsafe_allow_html=True)
         st.write("---")
 
-        level = st.selectbox("Pilih Level Kesulitan:", ["Mudah (1 - 50)", "Sedang (1 - 100)", "Sulit (1 - 200)"])
-        max_val = 50 if "Mudah" in level else (100 if "Sedang" in level else 200)
+        if "cb_secret" not in st.session_state:
+            digits = random.sample(range(1, 10), 3)
+            st.session_state.cb_secret = "".join(map(str, digits))
+            st.session_state.cb_attempts = 0
+            st.session_state.cb_history = []
+            st.session_state.cb_win = False
 
-        if "target" not in st.session_state or st.session_state.get("max_val") != max_val:
-            st.session_state.max_val = max_val
-            st.session_state.target = random.randint(1, max_val)
-            st.session_state.lives = 5
-            st.session_state.attempts = 0
-            st.session_state.game_over = False
-            st.session_state.win = False
-            st.session_state.clue_used = False
-            st.session_state.message = ""
-            st.session_state.clue_text = ""
-
-        col_stat1, col_stat2 = st.columns(2)
-        with col_stat1:
-            st.metric(label="Sisa Nyawa ❤️", value=f"{st.session_state.lives} / 5")
-        with col_stat2:
-            st.metric(label="Total Tebakan 🎯", value=st.session_state.attempts)
-
-        if not st.session_state.game_over and not st.session_state.win:
-            tebakan = st.number_input(f"Masukkan angka (1 - {max_val}):", min_value=1, max_value=max_val, value=1, step=1)
+        if not st.session_state.cb_win:
+            guess_input = st.text_input("Masukkan 3 digit angka unik (Contoh: 123):", max_chars=3)
             
-            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-            kirim_btn = st.button("Kirim Tebakan 🚀", use_container_width=True)
-            st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-            clue_btn = st.button("🔍 Minta Clue", use_container_width=True)
-
-            if clue_btn:
-                if not st.session_state.clue_used:
-                    st.session_state.clue_used = True
-                    sifat = "Genap" if st.session_state.target % 2 == 0 else "Ganjil"
-                    kelipatan_5 = "Ya" if st.session_state.target % 5 == 0 else "Tidak"
-                    st.session_state.clue_text = f"💡 **CLUE:** Angka rahasia berstatus **{sifat}** dan kelipatan 5 adalah **{kelipatan_5}**!"
+            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+            if st.button("Analisis Tebakan 🔍", use_container_width=True):
+                if len(guess_input) != 3 or not guess_input.isdigit() or len(set(guess_input)) != 3:
+                    st.error("⚠️ Masukkan tepat 3 digit angka berbeda (tanpa angka kembar)!")
                 else:
-                    st.session_state.clue_text = "⚠️ Clue sudah digunakan untuk ronde ini!"
-
-            if st.session_state.clue_text:
-                st.info(st.session_state.clue_text)
-
-            if kirim_btn:
-                st.session_state.attempts += 1
-                
-                if tebakan == st.session_state.target:
-                    st.session_state.win = True
-                    st.session_state.message = ""
-                    st.balloons()
-                elif tebakan < st.session_state.target:
-                    st.session_state.lives -= 1
-                    st.session_state.message = f"💡 Tebakanmu (**{tebakan}**) terlalu **KECIL**! Cari angka yang lebih besar."
-                else:
-                    st.session_state.lives -= 1
-                    st.session_state.message = f"💡 Tebakanmu (**{tebakan}**) terlalu **BESAR**! Cari angka yang lebih kecil."
+                    st.session_state.cb_attempts += 1
+                    secret = st.session_state.cb_secret
                     
-                if st.session_state.lives <= 0:
-                    st.session_state.game_over = True
-                
-                st.rerun()
+                    bulls = sum(1 for a, b in zip(guess_input, secret) if a == b)
+                    cows = sum(1 for a in guess_input if a in secret) - bulls
+                    
+                    st.session_state.cb_history.append(f"Tebakan **{guess_input}** ➔ 🎯 Tepat Posisi: **{bulls}** | 🟡 Benar Posisi Salah: **{cows}**")
+                    
+                    if bulls == 3:
+                        st.session_state.cb_win = True
+                        st.balloons()
+                    st.rerun()
 
-            if st.session_state.message:
-                st.warning(st.session_state.message)
+        if st.session_state.cb_history:
+            st.markdown("### 📋 Riwayat Analisis Logika:")
+            for h in reversed(st.session_state.cb_history):
+                st.markdown(f"- {h}")
 
-        if st.session_state.win:
-            st.success(f"🎉 **LUAR BIASA! Kamu Menang!** Angka rahasianya adalah **{st.session_state.target}**.")
-            st.info(f"Kamu berhasil menebaknya dalam {st.session_state.attempts} kali percobaan.")
-            if st.button("Main Lagi 🔄", use_container_width=True):
-                del st.session_state.target
-                st.rerun()
+        if st.session_state.cb_win:
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+            st.success(f"🎉 **LUAR BIASA! Kamu Berhasil Memecahkan Kode!** Angka rahasianya adalah **{st.session_state.cb_secret}**.")
+            st.info(f"Berhasil dipecahkan dalam {st.session_state.cb_attempts} kali percobaan analitik.")
 
-        if st.session_state.game_over:
-            st.error(f"💀 **GAME OVER!** Nyawamu habis. Angka rahasia yang benar adalah **{st.session_state.target}**.")
-            if st.button("Coba Lagi 🔄", use_container_width=True):
-                del st.session_state.target
-                st.rerun()
-
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 Reset / Ganti Angka Baru", use_container_width=True):
-            del st.session_state.target
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Reset / Kode Baru", use_container_width=True):
+            del st.session_state.cb_secret
             st.rerun()
 
     # ---------------------------------------------------------
-    # HALAMAN 3: ABSENSI QR BARCODE
+    # HALAMAN 2: ABSENSI QR BARCODE
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Absensi QR":
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         if st.button("⬅️ Kembali ke Lobby"):
             navigate_to("Lobby Utama")
             
         st.title("📷 Menu Absensi QR / Barcode")
-        st.write("Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.")
+        st.markdown("<p style='text-align: center;'>Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.</p>", unsafe_allow_html=True)
         st.write("---")
 
         if "attendance_success" not in st.session_state:
@@ -342,15 +313,15 @@ with st.container(key=st.session_state.current_page):
                         st.error(f"Terjadi kesalahan koneksi: {e}")
 
     # ---------------------------------------------------------
-    # HALAMAN 4: KRITIK & PESAN
+    # HALAMAN 3: KRITIK & PESAN
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Kritik & Pesan":
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
         if st.button("⬅️ Kembali ke Lobby"):
             navigate_to("Lobby Utama")
             
         st.title("📝 Halaman Kritik & Pesan")
-        st.write("Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.")
+        st.markdown("<p style='text-align: center;'>Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.</p>", unsafe_allow_html=True)
         st.write("---")
         
         if "form_submitted_success" not in st.session_state:
@@ -359,11 +330,11 @@ with st.container(key=st.session_state.current_page):
         if st.session_state.form_submitted_success:
             st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
             st.balloons()
-            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
             if st.button("🔄 Kirim Pesan Lain", use_container_width=True):
                 st.session_state.form_submitted_success = False
                 st.rerun()
-            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
             if st.button("🏠 Kembali ke Lobby", use_container_width=True):
                 st.session_state.form_submitted_success = False
                 navigate_to("Lobby Utama")
@@ -374,7 +345,7 @@ with st.container(key=st.session_state.current_page):
                 no_hp = st.text_input("No HP / WhatsApp (Opsional)")
                 pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
                 
-                st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
                 submitted = st.form_submit_button("Kirim Pesan 🚀", use_container_width=True)
                 
                 if submitted:
