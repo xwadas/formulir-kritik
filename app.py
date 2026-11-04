@@ -56,8 +56,8 @@ def apply_custom_style(image_file):
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
-            transform: translateY(35px) scale(0.97);
-            filter: blur(4px);
+            transform: translateY(40px) scale(0.96);
+            filter: blur(5px);
         }}
         100% {{
             opacity: 1;
@@ -68,6 +68,7 @@ def apply_custom_style(image_file):
 
     {bg_css}
 
+    /* Kontainer utama dengan animasi transisi */
     .block-container {{
         background: rgba(255, 255, 255, 0.22) !important;
         backdrop-filter: blur(12px);
@@ -79,10 +80,6 @@ def apply_custom_style(image_file):
         max-width: 96% !important;
         width: 96% !important;
         margin: 15px auto;
-    }}
-
-    /* Kelas animasi yang dipaksa aktif setiap elemen dimuat ulang */
-    .transition-wrapper {{
         animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
@@ -161,6 +158,20 @@ def apply_custom_style(image_file):
 apply_custom_style(background_image_path)
 
 # =========================================================
+# SKRIP JS UNTUK MEMAKSA ANIMASI BERPUTAR ULANG SAAT RERUN
+# =========================================================
+st.markdown("""
+<script>
+const container = window.parent.document.querySelector('.block-container');
+if (container) {
+    container.style.animation = 'none';
+    container.offsetHeight; /* Trigger reflow browser */
+    container.style.animation = 'pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+}
+</script>
+""", unsafe_allow_html=True)
+
+# =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
 WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
@@ -176,11 +187,8 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTEN UTAMA DENGAN PEMBUNGKUS DINAMIS (MEMICU ANIMASI)
+# KONTEN UTAMA BERDASARKAN HALAMAN AKTIF
 # =========================================================
-# Menggunakan ID dinamis agar browser merender ulang elemen saat halaman berganti
-st.markdown(f'<div class="transition-wrapper" id="page-{st.session_state.current_page}">', unsafe_allow_html=True)
-
 if st.session_state.current_page == "Lobby Utama":
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
@@ -366,5 +374,3 @@ elif st.session_state.current_page == "Kritik & Pesan":
                             st.error("❌ Gagal mengirim data ke server.")
                     except Exception as e:
                         st.error(f"Terjadi kesalahan: {e}")
-
-st.markdown('</div>', unsafe_allow_html=True)
