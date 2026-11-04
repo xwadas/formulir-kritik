@@ -52,23 +52,9 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* --- EFEK TRANSISI PERPINDAHAN HALAMAN --- */
-    @keyframes pageSlideIn {{
-        0% {{
-            opacity: 0;
-            transform: translateY(40px) scale(0.96);
-            filter: blur(5px);
-        }}
-        100% {{
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0px);
-        }}
-    }}
-
     {bg_css}
 
-    /* Kontainer utama dengan animasi transisi */
+    /* Kontainer transparan penuh dengan sisa pinggir tipis */
     .block-container {{
         background: rgba(255, 255, 255, 0.22) !important;
         backdrop-filter: blur(12px);
@@ -80,7 +66,6 @@ def apply_custom_style(image_file):
         max-width: 96% !important;
         width: 96% !important;
         margin: 15px auto;
-        animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
     /* Memperlebar komponen QR Scanner agar pas dan penuh di layar */
@@ -156,20 +141,6 @@ def apply_custom_style(image_file):
     )
 
 apply_custom_style(background_image_path)
-
-# =========================================================
-# SKRIP JS UNTUK MEMAKSA ANIMASI BERPUTAR ULANG SAAT RERUN
-# =========================================================
-st.markdown("""
-<script>
-const container = window.parent.document.querySelector('.block-container');
-if (container) {
-    container.style.animation = 'none';
-    container.offsetHeight; /* Trigger reflow browser */
-    container.style.animation = 'pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-}
-</script>
-""", unsafe_allow_html=True)
 
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
