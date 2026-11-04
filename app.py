@@ -5,6 +5,7 @@ import requests
 import random
 import base64
 from streamlit_qrcode_scanner import qrcode_scanner
+from streamlit_lottie import st_lottie
 
 # =========================================================
 # KONFIGURASI HALAMAN
@@ -15,6 +16,24 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed"
 )
+
+# =========================================================
+# FUNGSI PEMBANTU UNTUK MEMUAT ANIMASI LOTTIE TEMATIK
+# =========================================================
+def load_lottieurl(url):
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except:
+        return None
+
+# Kumpulan Animasi Lottie untuk Setiap Halaman
+lottie_welcome = load_lottieurl("https://assets5.lottiefiles.com/packages/lf20_V9t630.json")
+lottie_game = load_lottieurl("https://assets3.lottiefiles.com/packages/lf20_xyadoh9h.json")
+lottie_qr = load_lottieurl("https://assets8.lottiefiles.com/packages/lf20_1idq99fd.json")
+lottie_message = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_u4yee4oe.json")
 
 # =========================================================
 # MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
@@ -52,11 +71,11 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Animasi Transisi Halaman */
+    /* Animasi Transisi Halaman yang Lebih Dinamis */
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
-            transform: translateY(20px) scale(0.99);
+            transform: translateY(35px) scale(0.96);
         }}
         100% {{
             opacity: 1;
@@ -67,7 +86,7 @@ def apply_custom_style(image_file):
     {bg_css}
 
     .page-animate {{
-        animation: pageSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
     /* Kontainer transparan penuh dengan sisa pinggir tipis */
@@ -161,7 +180,7 @@ apply_custom_style(background_image_path)
 # =========================================================
 # KONFIGURASI GOOGLE APPS SCRIPT WEB APP URL
 # =========================================================
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyyO_Vnj3f6_Qtq7v32tJewxbTH77ZMQUwHAHZfQbAE1IwCwPuOZU42uqc_kErDgOKA/exec"
+WEB_APP_URL = "MASUKKAN_URL_WEB_APP_GOOGLE_SCRIPT_DISINI"
 
 # =========================================================
 # INISIALISASI NAVIGASI HALAMAN (SESSION STATE)
@@ -184,6 +203,9 @@ with st.container(key=st.session_state.current_page):
     # ---------------------------------------------------------
     if st.session_state.current_page == "Lobby Utama":
         st.title("🌟 Selamat Datang di Lobby Utama!")
+        if lottie_welcome:
+            st_lottie(lottie_welcome, height=140, key="anim_lobby")
+            
         st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
         st.write("---")
         
@@ -202,13 +224,15 @@ with st.container(key=st.session_state.current_page):
     # HALAMAN GAME: CODE BREAKER (STRATEGI ANALITIK)
     # ---------------------------------------------------------
     elif st.session_state.current_page == "Code Breaker":
-        # Tombol kembali dibuat compact menggunakan pembagian kolom
         col_back, _ = st.columns([1.3, 2.7])
         with col_back:
             if st.button("⬅️ Kembali", use_container_width=True):
                 navigate_to("Lobby Utama")
             
         st.title("🕵️‍♂️ Code Breaker")
+        if lottie_game:
+            st_lottie(lottie_game, height=120, key="anim_game")
+            
         st.markdown("<p style='text-align: center;'>Pecahkan 3 digit angka rahasia unik (1-9) menggunakan strategi analisis petunjuk!</p>", unsafe_allow_html=True)
         st.write("---")
 
@@ -265,6 +289,9 @@ with st.container(key=st.session_state.current_page):
                 navigate_to("Lobby Utama")
             
         st.title("📷 Menu Absensi QR")
+        if lottie_qr:
+            st_lottie(lottie_qr, height=120, key="anim_qr")
+            
         st.markdown("<p style='text-align: center;'>Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.</p>", unsafe_allow_html=True)
         st.write("---")
 
@@ -321,6 +348,9 @@ with st.container(key=st.session_state.current_page):
                 navigate_to("Lobby Utama")
             
         st.title("📝 Halaman Kritik & Pesan")
+        if lottie_message:
+            st_lottie(lottie_message, height=120, key="anim_message")
+            
         st.markdown("<p style='text-align: center;'>Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.</p>", unsafe_allow_html=True)
         st.write("---")
         
