@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM DENGAN ANIMASI PASTIKAN BERPUTAR
+# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -52,15 +52,17 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Animasi Transisi yang Dipaksa Berputar Ulang */
+    /* --- EFEK TRANSISI PERPINDAHAN HALAMAN --- */
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
             transform: translateY(35px) scale(0.97);
+            filter: blur(4px);
         }}
         100% {{
             opacity: 1;
             transform: translateY(0) scale(1);
+            filter: blur(0px);
         }}
     }}
 
@@ -79,7 +81,7 @@ def apply_custom_style(image_file):
         margin: 15px auto;
     }}
 
-    /* Kelas khusus pembungkus halaman untuk memicu animasi ulang */
+    /* Kelas animasi yang dipaksa aktif setiap elemen dimuat ulang */
     .transition-wrapper {{
         animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
@@ -174,9 +176,10 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTEN UTAMA DENGAN PEMBUNGKUS ANIMASI DINAMIS
+# KONTEN UTAMA DENGAN PEMBUNGKUS DINAMIS (MEMICU ANIMASI)
 # =========================================================
-st.markdown('<div class="transition-wrapper">', unsafe_allow_html=True)
+# Menggunakan ID dinamis agar browser merender ulang elemen saat halaman berganti
+st.markdown(f'<div class="transition-wrapper" id="page-{st.session_state.current_page}">', unsafe_allow_html=True)
 
 if st.session_state.current_page == "Lobby Utama":
     st.title("🌟 Selamat Datang di Lobby Utama!")
