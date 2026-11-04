@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
+# MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM DENGAN ANIMASI PASTIKAN BERPUTAR
 # =========================================================
 background_image_path = "background.jpg"
 
@@ -52,23 +52,20 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* --- EFEK TRANSISI PERPINDAHAN HALAMAN YANG LEBIH HALUS & ESTETIK --- */
+    /* Animasi Transisi yang Dipaksa Berputar Ulang */
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
-            transform: translateY(40px) scale(0.96);
-            filter: blur(6px);
+            transform: translateY(35px) scale(0.97);
         }}
         100% {{
             opacity: 1;
             transform: translateY(0) scale(1);
-            filter: blur(0px);
         }}
     }}
 
     {bg_css}
 
-    /* Kontainer transparan dengan animasi transisi halaman aktif */
     .block-container {{
         background: rgba(255, 255, 255, 0.22) !important;
         backdrop-filter: blur(12px);
@@ -80,7 +77,11 @@ def apply_custom_style(image_file):
         max-width: 96% !important;
         width: 96% !important;
         margin: 15px auto;
-        animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }}
+
+    /* Kelas khusus pembungkus halaman untuk memicu animasi ulang */
+    .transition-wrapper {{
+        animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
     /* Memperlebar komponen QR Scanner agar pas dan penuh di layar */
@@ -173,8 +174,10 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTEN UTAMA BERDASARKAN HALAMAN AKTIF
+# KONTEN UTAMA DENGAN PEMBUNGKUS ANIMASI DINAMIS
 # =========================================================
+st.markdown('<div class="transition-wrapper">', unsafe_allow_html=True)
+
 if st.session_state.current_page == "Lobby Utama":
     st.title("🌟 Selamat Datang di Lobby Utama!")
     st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
@@ -360,3 +363,5 @@ elif st.session_state.current_page == "Kritik & Pesan":
                             st.error("❌ Gagal mengirim data ke server.")
                     except Exception as e:
                         st.error(f"Terjadi kesalahan: {e}")
+
+st.markdown('</div>', unsafe_allow_html=True)
