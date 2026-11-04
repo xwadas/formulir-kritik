@@ -5,7 +5,6 @@ import requests
 import random
 import base64
 from streamlit_qrcode_scanner import qrcode_scanner
-from streamlit_lottie import st_lottie
 
 # =========================================================
 # KONFIGURASI HALAMAN
@@ -16,24 +15,6 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed"
 )
-
-# =========================================================
-# FUNGSI PEMBANTU UNTUK MEMUAT ANIMASI LOTTIE TEMATIK
-# =========================================================
-def load_lottieurl(url):
-    try:
-        r = requests.get(url)
-        if r.status_code != 200:
-            return None
-        return r.json()
-    except:
-        return None
-
-# Kumpulan Animasi Lottie untuk Setiap Halaman
-lottie_welcome = load_lottieurl("https://assets5.lottiefiles.com/packages/lf20_V9t630.json")
-lottie_game = load_lottieurl("https://assets3.lottiefiles.com/packages/lf20_xyadoh9h.json")
-lottie_qr = load_lottieurl("https://assets8.lottiefiles.com/packages/lf20_1idq99fd.json")
-lottie_message = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_u4yee4oe.json")
 
 # =========================================================
 # MENAMBAHKAN LATAR BELAKANG & CSS KUSTOM
@@ -71,25 +52,23 @@ def apply_custom_style(image_file):
     st.markdown(
     f"""
     <style>
-    /* Animasi Transisi Halaman yang Lebih Dinamis */
+    /* --- EFEK TRANSISI PERPINDAHAN HALAMAN YANG LEBIH HALUS & ESTETIK --- */
     @keyframes pageSlideIn {{
         0% {{
             opacity: 0;
-            transform: translateY(35px) scale(0.96);
+            transform: translateY(40px) scale(0.96);
+            filter: blur(6px);
         }}
         100% {{
             opacity: 1;
             transform: translateY(0) scale(1);
+            filter: blur(0px);
         }}
     }}
 
     {bg_css}
 
-    .page-animate {{
-        animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }}
-
-    /* Kontainer transparan penuh dengan sisa pinggir tipis */
+    /* Kontainer transparan dengan animasi transisi halaman aktif */
     .block-container {{
         background: rgba(255, 255, 255, 0.22) !important;
         backdrop-filter: blur(12px);
@@ -101,6 +80,7 @@ def apply_custom_style(image_file):
         max-width: 96% !important;
         width: 96% !important;
         margin: 15px auto;
+        animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }}
 
     /* Memperlebar komponen QR Scanner agar pas dan penuh di layar */
@@ -193,219 +173,190 @@ def navigate_to(page_name):
     st.rerun()
 
 # =========================================================
-# KONTAINER UTAMA DENGAN KEY DINAMIS (MEMICU ANIMASI ULANG)
+# KONTEN UTAMA BERDASARKAN HALAMAN AKTIF
 # =========================================================
-with st.container(key=st.session_state.current_page):
-    st.markdown('<div class="page-animate">', unsafe_allow_html=True)
+if st.session_state.current_page == "Lobby Utama":
+    st.title("🌟 Selamat Datang di Lobby Utama!")
+    st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
+    st.write("---")
     
-    # ---------------------------------------------------------
-    # HALAMAN 1: LOBBY UTAMA
-    # ---------------------------------------------------------
-    if st.session_state.current_page == "Lobby Utama":
-        st.title("🌟 Selamat Datang di Lobby Utama!")
-        if lottie_welcome:
-            st_lottie(lottie_welcome, height=140, key="anim_lobby")
-            
-        st.markdown("<p style='text-align: center; margin-bottom: 20px;'>Jelajahi fitur interaktif aplikasi kami melalui menu di bawah ini:</p>", unsafe_allow_html=True)
-        st.write("---")
+    if st.button("🎮 Mainkan Game Code Breaker", use_container_width=True):
+        navigate_to("Code Breaker")
+    
+    st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+    if st.button("📷 Masuk ke Menu Absensi QR", use_container_width=True):
+        navigate_to("Absensi QR")
+
+    st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+    if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
+        navigate_to("Kritik & Pesan")
+
+elif st.session_state.current_page == "Code Breaker":
+    col_back, _ = st.columns([1.3, 2.7])
+    with col_back:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            navigate_to("Lobby Utama")
         
-        if st.button("🎮 Mainkan Game Code Breaker", use_container_width=True):
-            navigate_to("Code Breaker")
+    st.title("🕵️‍♂️ Code Breaker")
+    st.markdown("<p style='text-align: center;'>Pecahkan 3 digit angka rahasia unik (1-9) menggunakan strategi analisis petunjuk!</p>", unsafe_allow_html=True)
+    st.write("---")
+
+    if "cb_secret" not in st.session_state:
+        digits = random.sample(range(1, 10), 3)
+        st.session_state.cb_secret = "".join(map(str, digits))
+        st.session_state.cb_attempts = 0
+        st.session_state.cb_history = []
+        st.session_state.cb_win = False
+
+    if not st.session_state.cb_win:
+        guess_input = st.text_input("Masukkan 3 digit angka unik (Contoh: 123):", max_chars=3)
         
         st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-        if st.button("📷 Masuk ke Menu Absensi QR", use_container_width=True):
-            navigate_to("Absensi QR")
+        if st.button("Analisis Tebakan 🔍", use_container_width=True):
+            if len(guess_input) != 3 or not guess_input.isdigit() or len(set(guess_input)) != 3:
+                st.error("⚠️ Masukkan tepat 3 digit angka berbeda (tanpa angka kembar)!")
+            else:
+                st.session_state.cb_attempts += 1
+                secret = st.session_state.cb_secret
+                
+                bulls = sum(1 for a, b in zip(guess_input, secret) if a == b)
+                cows = sum(1 for a in guess_input if a in secret) - bulls
+                
+                st.session_state.cb_history.append(f"Tebakan **{guess_input}** ➔ 🎯 Tepat Posisi: **{bulls}** | 🟡 Benar Posisi Salah: **{cows}**")
+                
+                if bulls == 3:
+                    st.session_state.cb_win = True
+                    st.balloons()
+                st.rerun()
 
+    if st.session_state.cb_history:
+        st.markdown("### 📋 Riwayat Analisis Logika:")
+        for h in reversed(st.session_state.cb_history):
+            st.markdown(f"- {h}")
+
+    if st.session_state.cb_win:
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        st.success(f"🎉 **LUAR BIASA! Kamu Berhasil Memecahkan Kode!** Angka rahasianya adalah **{st.session_state.cb_secret}**.")
+        st.info(f"Berhasil dipecahkan dalam {st.session_state.cb_attempts} kali percobaan analitik.")
+
+    st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    if st.button("🔄 Reset / Kode Baru", use_container_width=True):
+        del st.session_state.cb_secret
+        st.rerun()
+
+elif st.session_state.current_page == "Absensi QR":
+    col_back, _ = st.columns([1.3, 2.7])
+    with col_back:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            navigate_to("Lobby Utama")
+        
+    st.title("📷 Menu Absensi QR")
+    st.markdown("<p style='text-align: center;'>Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.</p>", unsafe_allow_html=True)
+    st.write("---")
+
+    if "attendance_success" not in st.session_state:
+        st.session_state.attendance_success = False
+    if "last_scanned_qr" not in st.session_state:
+        st.session_state.last_scanned_qr = None
+
+    if st.session_state.attendance_success:
+        st.success("🎉 Absensi Berhasil Tercatat!")
+        st.info(f"Data QR Terakhir: **{st.session_state.last_scanned_qr}**")
+        st.balloons()
+        
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Baca QR Code Lagi", use_container_width=True):
+            st.session_state.attendance_success = False
+            st.session_state.last_scanned_qr = None
+            st.rerun()
+    else:
+        qr_code = qrcode_scanner(key='qrcode_scanner')
+
+        if qr_code:
+            if qr_code != st.session_state.last_scanned_qr:
+                st.session_state.last_scanned_qr = qr_code
+                
+                wib = timezone(timedelta(hours=7))
+                waktu_absen = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
+                
+                payload = {
+                    "tipe": "absensi",
+                    "waktu": waktu_absen,
+                    "data_qr": qr_code
+                }
+                
+                try:
+                    with st.spinner(f"⏳ Mengirim absensi untuk **{qr_code}** ke server..."):
+                        response = requests.post(WEB_APP_URL, json=payload)
+                        
+                    if response.status_code == 200:
+                        st.session_state.attendance_success = True
+                        st.rerun()
+                    else:
+                        st.error("❌ Gagal mengirim absensi ke server.")
+                except Exception as e:
+                    st.error(f"Terjadi kesalahan koneksi: {e}")
+
+elif st.session_state.current_page == "Kritik & Pesan":
+    col_back, _ = st.columns([1.3, 2.7])
+    with col_back:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            navigate_to("Lobby Utama")
+        
+    st.title("📝 Halaman Kritik & Pesan")
+    st.markdown("<p style='text-align: center;'>Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.</p>", unsafe_allow_html=True)
+    st.write("---")
+    
+    if "form_submitted_success" not in st.session_state:
+        st.session_state.form_submitted_success = False
+
+    if st.session_state.form_submitted_success:
+        st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
+        st.balloons()
         st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-        if st.button("📝 Masuk ke Kritik & Pesan", use_container_width=True):
-            navigate_to("Kritik & Pesan")
-
-    # ---------------------------------------------------------
-    # HALAMAN GAME: CODE BREAKER (STRATEGI ANALITIK)
-    # ---------------------------------------------------------
-    elif st.session_state.current_page == "Code Breaker":
-        col_back, _ = st.columns([1.3, 2.7])
-        with col_back:
-            if st.button("⬅️ Kembali", use_container_width=True):
-                navigate_to("Lobby Utama")
+        if st.button("🔄 Kirim Pesan Lain", use_container_width=True):
+            st.session_state.form_submitted_success = False
+            st.rerun()
+        st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+        if st.button("🏠 Kembali ke Lobby", use_container_width=True):
+            st.session_state.form_submitted_success = False
+            navigate_to("Lobby Utama")
             
-        st.title("🕵️‍♂️ Code Breaker")
-        if lottie_game:
-            st_lottie(lottie_game, height=120, key="anim_game")
-            
-        st.markdown("<p style='text-align: center;'>Pecahkan 3 digit angka rahasia unik (1-9) menggunakan strategi analisis petunjuk!</p>", unsafe_allow_html=True)
-        st.write("---")
-
-        if "cb_secret" not in st.session_state:
-            digits = random.sample(range(1, 10), 3)
-            st.session_state.cb_secret = "".join(map(str, digits))
-            st.session_state.cb_attempts = 0
-            st.session_state.cb_history = []
-            st.session_state.cb_win = False
-
-        if not st.session_state.cb_win:
-            guess_input = st.text_input("Masukkan 3 digit angka unik (Contoh: 123):", max_chars=3)
+    else:
+        with st.form("form_kritik_pesan"):
+            nama = st.text_input("Nama Lengkap (Opsional)")
+            no_hp = st.text_input("No HP / WhatsApp (Opsional)")
+            pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
             
             st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-            if st.button("Analisis Tebakan 🔍", use_container_width=True):
-                if len(guess_input) != 3 or not guess_input.isdigit() or len(set(guess_input)) != 3:
-                    st.error("⚠️ Masukkan tepat 3 digit angka berbeda (tanpa angka kembar)!")
+            submitted = st.form_submit_button("Kirim Pesan 🚀", use_container_width=True)
+            
+            if submitted:
+                if not pesan.strip():
+                    st.error("Pesan wajib diisi!")
                 else:
-                    st.session_state.cb_attempts += 1
-                    secret = st.session_state.cb_secret
-                    
-                    bulls = sum(1 for a, b in zip(guess_input, secret) if a == b)
-                    cows = sum(1 for a in guess_input if a in secret) - bulls
-                    
-                    st.session_state.cb_history.append(f"Tebakan **{guess_input}** ➔ 🎯 Tepat Posisi: **{bulls}** | 🟡 Benar Posisi Salah: **{cows}**")
-                    
-                    if bulls == 3:
-                        st.session_state.cb_win = True
-                        st.balloons()
-                    st.rerun()
-
-        if st.session_state.cb_history:
-            st.markdown("### 📋 Riwayat Analisis Logika:")
-            for h in reversed(st.session_state.cb_history):
-                st.markdown(f"- {h}")
-
-        if st.session_state.cb_win:
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-            st.success(f"🎉 **LUAR BIASA! Kamu Berhasil Memecahkan Kode!** Angka rahasianya adalah **{st.session_state.cb_secret}**.")
-            st.info(f"Berhasil dipecahkan dalam {st.session_state.cb_attempts} kali percobaan analitik.")
-
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 Reset / Kode Baru", use_container_width=True):
-            del st.session_state.cb_secret
-            st.rerun()
-
-    # ---------------------------------------------------------
-    # HALAMAN 2: ABSENSI QR BARCODE
-    # ---------------------------------------------------------
-    elif st.session_state.current_page == "Absensi QR":
-        col_back, _ = st.columns([1.3, 2.7])
-        with col_back:
-            if st.button("⬅️ Kembali", use_container_width=True):
-                navigate_to("Lobby Utama")
-            
-        st.title("📷 Menu Absensi QR")
-        if lottie_qr:
-            st_lottie(lottie_qr, height=120, key="anim_qr")
-            
-        st.markdown("<p style='text-align: center;'>Arahkan kamera perangkat Anda ke QR Code. Data akan langsung terkirim secara otomatis.</p>", unsafe_allow_html=True)
-        st.write("---")
-
-        if "attendance_success" not in st.session_state:
-            st.session_state.attendance_success = False
-        if "last_scanned_qr" not in st.session_state:
-            st.session_state.last_scanned_qr = None
-
-        if st.session_state.attendance_success:
-            st.success("🎉 Absensi Berhasil Tercatat!")
-            st.info(f"Data QR Terakhir: **{st.session_state.last_scanned_qr}**")
-            st.balloons()
-            
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-            if st.button("🔄 Baca QR Code Lagi", use_container_width=True):
-                st.session_state.attendance_success = False
-                st.session_state.last_scanned_qr = None
-                st.rerun()
-        else:
-            qr_code = qrcode_scanner(key='qrcode_scanner')
-
-            if qr_code:
-                if qr_code != st.session_state.last_scanned_qr:
-                    st.session_state.last_scanned_qr = qr_code
+                    final_nama = nama.strip() if nama.strip() else "Anonim"
+                    final_no_hp = no_hp.strip() if no_hp.strip() else "-"
                     
                     wib = timezone(timedelta(hours=7))
-                    waktu_absen = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
+                    waktu_kirim = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
                     
                     payload = {
-                        "tipe": "absensi",
-                        "waktu": waktu_absen,
-                        "data_qr": qr_code
+                        "tipe": "kritik_pesan",
+                        "waktu": waktu_kirim,
+                        "nama": final_nama,
+                        "no_hp": final_no_hp,
+                        "pesan": pesan
                     }
                     
                     try:
-                        with st.spinner(f"⏳ Mengirim absensi untuk **{qr_code}** ke server..."):
+                        with st.spinner("⏳ Mengirim pesan ke server, mohon tunggu..."):
                             response = requests.post(WEB_APP_URL, json=payload)
                             
                         if response.status_code == 200:
-                            st.session_state.attendance_success = True
+                            st.session_state.form_submitted_success = True
                             st.rerun()
                         else:
-                            st.error("❌ Gagal mengirim absensi ke server.")
+                            st.error("❌ Gagal mengirim data ke server.")
                     except Exception as e:
-                        st.error(f"Terjadi kesalahan koneksi: {e}")
-
-    # ---------------------------------------------------------
-    # HALAMAN 3: KRITIK & PESAN
-    # ---------------------------------------------------------
-    elif st.session_state.current_page == "Kritik & Pesan":
-        col_back, _ = st.columns([1.3, 2.7])
-        with col_back:
-            if st.button("⬅️ Kembali", use_container_width=True):
-                navigate_to("Lobby Utama")
-            
-        st.title("📝 Halaman Kritik & Pesan")
-        if lottie_message:
-            st_lottie(lottie_message, height=120, key="anim_message")
-            
-        st.markdown("<p style='text-align: center;'>Silakan isi pesan di bawah ini. Kolom Nama dan No HP bersifat opsional.</p>", unsafe_allow_html=True)
-        st.write("---")
-        
-        if "form_submitted_success" not in st.session_state:
-            st.session_state.form_submitted_success = False
-
-        if st.session_state.form_submitted_success:
-            st.success("✅ Terima kasih! Data Anda berhasil masuk ke Google Sheets.")
-            st.balloons()
-            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-            if st.button("🔄 Kirim Pesan Lain", use_container_width=True):
-                st.session_state.form_submitted_success = False
-                st.rerun()
-            st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-            if st.button("🏠 Kembali ke Lobby", use_container_width=True):
-                st.session_state.form_submitted_success = False
-                navigate_to("Lobby Utama")
-                
-        else:
-            with st.form("form_kritik_pesan"):
-                nama = st.text_input("Nama Lengkap (Opsional)")
-                no_hp = st.text_input("No HP / WhatsApp (Opsional)")
-                pesan = st.text_area("Pesan / Kritik & Saran (Wajib Diisi)")
-                
-                st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
-                submitted = st.form_submit_button("Kirim Pesan 🚀", use_container_width=True)
-                
-                if submitted:
-                    if not pesan.strip():
-                        st.error("Pesan wajib diisi!")
-                    else:
-                        final_nama = nama.strip() if nama.strip() else "Anonim"
-                        final_no_hp = no_hp.strip() if no_hp.strip() else "-"
-                        
-                        wib = timezone(timedelta(hours=7))
-                        waktu_kirim = datetime.now(wib).strftime("%Y-%m-%d %H:%M:%S")
-                        
-                        payload = {
-                            "tipe": "kritik_pesan",
-                            "waktu": waktu_kirim,
-                            "nama": final_nama,
-                            "no_hp": final_no_hp,
-                            "pesan": pesan
-                        }
-                        
-                        try:
-                            with st.spinner("⏳ Mengirim pesan ke server, mohon tunggu..."):
-                                response = requests.post(WEB_APP_URL, json=payload)
-                                
-                            if response.status_code == 200:
-                                st.session_state.form_submitted_success = True
-                                st.rerun()
-                            else:
-                                st.error("❌ Gagal mengirim data ke server.")
-                        except Exception as e:
-                            st.error(f"Terjadi kesalahan: {e}")
-                            
-    st.markdown('</div>', unsafe_allow_html=True)
+                        st.error(f"Terjadi kesalahan: {e}")
